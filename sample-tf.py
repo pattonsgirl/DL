@@ -76,9 +76,13 @@ def neural_network_model(data):
     return output
 
 def conv_network_model(x):
+    #create a weight tensor
     W_conv1 = weight_variable([5, 5, 1, 32])
+    # one bias per neuron, not per input
     b_conv1 = bias_variable([32])
 
+    #reshape input into a 4 parameter tensor
+    #TODO - find out what -1 does
     x_image = tf.reshape(x, [-1,28,28,1])
 
     h_conv1 = tf.nn.relu(conv2d(x_image, W_conv1) + b_conv1)
@@ -88,21 +92,26 @@ def conv_network_model(x):
     b_conv2 = bias_variable([64])
 
     h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
-    h_pool2 = max_pool_2x2(h_conv2)
+    #image is shrunk to 14x14, then shrunk to 7x7
+    h_pool2 = max_pool_2x2(h_conv2) 
 
+    #1024 - arbitrary number of nodes, may act nicely on computer
     W_fc1 = weight_variable([7 * 7 * 64, 1024])
     b_fc1 = bias_variable([1024])
 
+    #TODO - why? We need to flatten it out from 2D to 1D
     h_pool2_flat = tf.reshape(h_pool2, [-1, 7*7*64])
+    #now pass the flattened into the fully connected
     h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1)
 
-#    keep_prob = tf.placeholder(tf.float32)
-#    h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
+    #TODO - experiment with dropout? Not big for mnist, helpful in others?
+    #keep_prob = tf.placeholder(tf.float32)
+    #h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
 
     W_fc2 = weight_variable([1024, 10])
     b_fc2 = bias_variable([10])
 
-#    output=tf.nn.softmax(tf.matmul(h_fc1_drop, W_fc2) + b_fc2)
+    #output=tf.nn.softmax(tf.matmul(h_fc1_drop, W_fc2) + b_fc2)
     output=tf.matmul(h_fc1, W_fc2) + b_fc2
     return output
 
@@ -144,5 +153,6 @@ def other_train_neural_network(x, network_model):
 			print('Epoch', epoch, 'completed out of', hm_epochs, 'loss:', epoch_loss)
 		print('Accuracy:',accuracy.eval({x:mnist.test.images, y:mnist.test.labels}))
 
+#x is input data set
 train_neural_network(x, neural_network_model)
 train_neural_network(x, conv_network_model)
