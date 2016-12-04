@@ -13,7 +13,7 @@ mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
 
 import tensorflow as tf
 tf.reset_default_graph()
-logs_path = "log_mnist_adv"
+logs_path = "log_mnist_adv2"
 #allow interleaving of ops ELSE build computation graph first, then start session and launch graph
 #computation graph - defines operations outside of Python instead of switching back and forth a bunch
 sess = tf.InteractiveSession()
